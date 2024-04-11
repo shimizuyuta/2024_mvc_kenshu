@@ -1,23 +1,39 @@
+## 初回セットアップ手順（上から順番に実行）
 
+```sh
+# 作業ディレクトリに移動して作業を進めてください 
 
-# 環境構築
-1. コンテナの立ち上げ
-```
-make up
-````
+cp .env.example .env
 
-2. コンテナ停止
-```
-make down
+#　以下はまとめてコピペして実行してください
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest \
+    composer install
+
+docker-compose up -d
+docker-compose exec laravel.test php artisan key:generate
+docker-compose exec laravel.test php artisan migrate:fresh
+docker-compose exec laravel.test npm install
+docker-compose exec laravel.test npm run dev
 ```
 
-# sailエイリアスの設定
-デフォルトでSailコマンドはvendor/bin/sailスクリプトを使用して起動するので、これを簡単に実行できるようにしたい方
+## 起動
+
+```sh
+docker-compose up -d
+docker-compose exec laravel.test npm run dev
 ```
-$ alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
+
+## 停止
+
+```sh
+docker-compose stop
 ```
-これにより
-```
-$ sail up
-```
-でsailが起動できる
+
+## URL
+サンプルアプリ：http://localhost/
+
+phpMyAdmin: http://localhost:8080/
