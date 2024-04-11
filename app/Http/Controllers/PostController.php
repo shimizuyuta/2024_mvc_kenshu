@@ -31,20 +31,14 @@ class PostController extends Controller
     {
         $request->validate([
             'title' => 'required|max:255',
-            'description' => 'nullable|max:255',
-            'image' => 'nullable|image|max:2048'
+            'content' => 'nullable|max:255',
+            'type' => 'required|in:本番環境,開発環境,デモ環境',
         ]);
-
-        //画像ファイルの処理
-        $imageName = null;
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $imageName = $request->file('image')->store('images', 'public');
-        }
 
         $post = Post::create([
             'title' => $request->title,
-            'description' => $request->description,
-            'image' => $imageName,
+            'content' => $request->description,
+            'type' => $request->type
         ]);
 
         if ($post) {
@@ -81,21 +75,19 @@ class PostController extends Controller
     {
         $request->validate([
             'title' => 'required|max:255',
-            'description' => 'nullable|max:255',
-            'image' => 'nullable|string',
+            'content' => 'nullable|max:255',
+            'type' => 'required|in:本番環境,開発環境,デモ環境',
         ]);
         
         $id = $request->id;
         $post = Post::findOrFail($id);
-        //画像ファイルの処理
-        $imageName = null;
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $imageName = $request->file('image')->store('images', 'public');
-        }
         $post->fill($request->all());
         
-        $post->save();
-        return redirect()->route('posts.index');
+        if($post->save()) {
+            return redirect()->route('posts.index')->with('success', '投稿が正常に更新されました。');
+        } else {
+            return back()->with('error', '投稿の更新に失敗しました。')->withInput();
+        }
     }
 
     /**
@@ -105,7 +97,10 @@ class PostController extends Controller
     {
         $id = $request->id;
         $post = Post::findOrFail($id);
-        $post->delete();
-        return redirect()->route('posts.index');
+        if ($post->delete()) {
+            return redirect()->route('posts.index')->with('success', '投稿が正常に削除されました。');
+        } else {
+            return back()->with('error', '投稿の削除に失敗しました。');
+        }    
     }
 }
