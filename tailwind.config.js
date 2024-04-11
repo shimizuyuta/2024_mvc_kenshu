@@ -9,7 +9,15 @@ export default {
     "./resources/**/*.js",
   ],
   theme: {
-    extend: {},
+    extend: {
+      height: {
+        '25': '25vh',
+        '50': '50vh',
+        '75': '75vh',
+        '85': '85vh',
+        '100': '100vh',
+      }
+    },
   },
   plugins: [
     typography,
