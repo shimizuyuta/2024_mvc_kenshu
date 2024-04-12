@@ -13,11 +13,8 @@ docker run --rm \
     laravelsail/php82-composer:latest \
     composer install
 
-docker-compose up -d
-docker-compose exec laravel.test php artisan key:generate
-docker-compose exec laravel.test php artisan migrate:fresh
-docker-compose exec laravel.test npm install
-docker-compose exec laravel.test npm run dev
+make up 
+make set-up-first
 ```
 
 ## 起動
